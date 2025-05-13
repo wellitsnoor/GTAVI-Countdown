@@ -38,6 +38,9 @@ export default function BackgroundSlideshow() {
             fill
             className="object-cover w-full h-full"
             priority={index === 0}
+            blurDataURL={
+              index === 0 ? "LQI5oXS$%hadyZNGahae4;s;IUoJ" : undefined
+            }
           />
           {/* <div className="absolute inset-0 bg-black bg-opacity-50" /> */}
         </div>
