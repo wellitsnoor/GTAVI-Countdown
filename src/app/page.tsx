@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import BackgroundSlideshow from "./components/BackgroundSlideshow";
 
+import { motion } from "framer-motion";
+
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
@@ -54,23 +56,49 @@ export default function Home() {
         <BackgroundSlideshow />
 
         <div className="text-center z-10 w-full max-w-7xl">
-          <div className="grid grid-cols-5 md:grid-cols-5 lg:grid-cols-5 gap-2 md:gap-4">
+          <motion.div className="grid grid-cols-5 md:grid-cols-5 lg:grid-cols-5 gap-2 md:gap-4">
             {["Years", "Days", "Hours", "Minutes", "Seconds"].map(
               (item, index) => (
-                <div
+                <motion.div
                   key={index}
+                  initial={{
+                    y: 25,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    y: 0,
+                    opacity: 1,
+                  }}
+                  transition={{
+                    delay: 1 + index * 0.1,
+                    duration: 0.5,
+                  }}
                   className="bg-opacity-50 p-2 md:p-6 rounded-lg"
                 >
-                  <div className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-bold">
+                  <motion.div
+                    key={timeLeft[item.toLowerCase() as keyof typeof timeLeft]}
+                    initial={{
+                      y: 25,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      y: 0,
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                    }}
+                    className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-bold"
+                  >
                     {timeLeft[item.toLowerCase() as keyof typeof timeLeft]}
-                  </div>
+                  </motion.div>
                   <div className="text-sm sm:text-lg md:text-xl lg:text-2xl">
                     {item}
                   </div>
-                </div>
+                </motion.div>
               )
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
       <div className="fixed bottom-0 w-full text-center pb-4 z-20">
