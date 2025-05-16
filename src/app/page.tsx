@@ -17,15 +17,13 @@ export default function Home() {
 
   useEffect(() => {
     // Set target date in New York timezone
-    const targetDate = new Date("2026-05-26T00:00:00-04:00"); // EDT timezone offset
+    const targetDate = new Date("2026-05-26T00:00:00"); 
 
     const interval = setInterval(() => {
       // Get current time in New York
       const now = new Date();
-      const nyTime = new Date(
-        now.toLocaleString("en-US", { timeZone: "America/New_York" })
-      );
-      const difference = targetDate.getTime() - nyTime.getTime();
+    
+      const difference = targetDate.getTime() - now.getTime();
 
       if (difference <= 0) {
         // Game released!
