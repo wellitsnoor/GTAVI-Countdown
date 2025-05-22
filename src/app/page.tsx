@@ -91,7 +91,9 @@ export default function Home() {
                     {timeLeft[item.toLowerCase() as keyof typeof timeLeft]}
                   </motion.div>
                   <div className="text-sm sm:text-lg md:text-xl lg:text-2xl">
-                    {item}
+                    {timeLeft[item.toLowerCase() as keyof typeof timeLeft] === 1
+                      ? item.slice(0, -1) // Remove 's' from the end
+                      : item}
                   </div>
                 </motion.div>
               )
