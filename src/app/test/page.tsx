@@ -14,43 +14,74 @@ export default function Home() {
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
+    // Define the total duration of the countdown from when it's considered 0% complete.
+    // Based on your image (0 Years, 364 Days, 23 Hours, 27 Minutes, 39 Seconds at 0.00%):
+    const totalSecondsAtStart =
+      364 * 24 * 60 * 60 + // 364 days
+      23 * 60 * 60 + // 23 hours
+      27 * 60 + // 27 minutes
+      39; // 39 seconds
+    const TOTAL_COUNTDOWN_MILLISECONDS_AT_START = totalSecondsAtStart * 1000;
+
+    // Set target date (ensure this correctly represents 2026-05-26T00:00:00 in the intended timezone, e.g., New York)
+    // For getTime(), it will be converted to UTC milliseconds.
     const targetDate = new Date("2026-05-26T00:00:00");
-    const startDate = new Date("2025-05-26T00:00:00");
 
     const interval = setInterval(() => {
       const now = new Date();
+      const millisecondsRemaining = targetDate.getTime() - now.getTime();
 
-      const percentage1 =
-        ((now.getTime() - startDate.getTime()) /
-          (targetDate.getTime() - startDate.getTime())) *
-        100;
-
-      setPercentage(Math.min(percentage1, 100));
-
-      const difference = targetDate.getTime() - now.getTime();
-
-      if (difference <= 0) {
+      if (millisecondsRemaining <= 0) {
         // Game released!
         setTimeLeft({ years: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setPercentage(100.0); // Set percentage to 100
         clearInterval(interval);
         return;
       }
 
-      const totalSeconds = Math.floor(difference / 1000);
+      // Calculate time elapsed since the defined start of the countdown period
+      // This is: (Total Duration when countdown started) - (Current Time Remaining)
+      const millisecondsElapsed =
+        TOTAL_COUNTDOWN_MILLISECONDS_AT_START - millisecondsRemaining;
 
-      const years = Math.floor(totalSeconds / (60 * 60 * 24 * 365));
+      let calculatedPercentage;
+      if (TOTAL_COUNTDOWN_MILLISECONDS_AT_START > 0) {
+        calculatedPercentage =
+          (millisecondsElapsed / TOTAL_COUNTDOWN_MILLISECONDS_AT_START) * 100;
+      } else {
+        // This case implies the total duration was zero or negative.
+        // If target is reached, 100%, otherwise 0%.
+        calculatedPercentage = millisecondsRemaining <= 0 ? 100 : 0;
+      }
+
+      // Clamp percentage between 0% and 100%
+      calculatedPercentage = Math.max(0, Math.min(100, calculatedPercentage));
+
+      // Update the percentage state
+      // The original code had `setPercentage(percentage)` which is incorrect.
+      // It should be `setPercentage(calculatedPercentage)`.
+      setPercentage(calculatedPercentage);
+
+      // Calculate time left for display (years, days, hours, minutes, seconds)
+      const totalSecondsLeft = Math.floor(millisecondsRemaining / 1000);
+
+      const years = Math.floor(totalSecondsLeft / (60 * 60 * 24 * 365)); // Approximation
       const days = Math.floor(
-        (totalSeconds % (60 * 60 * 24 * 365)) / (60 * 60 * 24)
+        (totalSecondsLeft % (60 * 60 * 24 * 365)) / (60 * 60 * 24)
       );
-      const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
-      const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-      const seconds = totalSeconds % 60;
+      const hours = Math.floor((totalSecondsLeft % (60 * 60 * 24)) / (60 * 60));
+      const minutes = Math.floor((totalSecondsLeft % (60 * 60)) / 60);
+      const seconds = totalSecondsLeft % 60;
 
       setTimeLeft({ years, days, hours, minutes, seconds });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+    // Add state setters to dependency array if they are props or defined outside.
+    // If setTimeLeft and setPercentage are from useState in the same component,
+    // they are stable and might not be strictly needed in deps, but it's good practice.
+  }, [setTimeLeft, setPercentage]);
+
 
   return (
     <>
